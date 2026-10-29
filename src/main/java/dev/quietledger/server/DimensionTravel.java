@@ -4,6 +4,7 @@ import dev.quietledger.LedgerConfig;
 import dev.quietledger.QuietLedger;
 import dev.quietledger.core.LandingOffsets;
 import dev.quietledger.core.Progression;
+import dev.quietledger.core.Journal;
 import java.util.Set;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
@@ -37,7 +38,9 @@ public final class DimensionTravel {
             return failure(source, "The world has not reached the configured travel stage.");
         ServerLevel target = source.getServer().getLevel(destination);
         if (target == null) return failure(source, "Dimension is not available. Check world generation and restart the server.");
-        return travel(source, player, target, new BlockPos(0, 0, 0));
+        int result = travel(source, player, target, new BlockPos(0, 0, 0));
+        if (result == 1) data.discover(player.getUUID(), destination.equals(EXPANSE) ? Journal.Clue.EXPANSE : Journal.Clue.CORRIDOR);
+        return result;
     }
     public static int escape(CommandSourceStack source) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         ServerPlayer player = source.getPlayerOrException();

@@ -4,6 +4,7 @@ import dev.quietledger.LedgerConfig;
 import dev.quietledger.LedgerSounds;
 import dev.quietledger.core.AnomalyCatalog;
 import dev.quietledger.core.Progression;
+import dev.quietledger.core.Journal;
 import java.util.Map;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -35,6 +36,8 @@ public final class AnomalyDirector {
             if (chosen == null) continue;
             emit(player, chosen.kind());
             data.recordScheduled(chosen.kind(), player.getUUID());
+            if (data.discover(player.getUUID(), Journal.eventClue(chosen.kind())) && LedgerConfig.MESSAGES.get())
+                player.sendSystemMessage(Component.literal("A detail was recorded. Use /ledgerjournal to read it."));
             return;
         }
     }

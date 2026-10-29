@@ -1,6 +1,7 @@
 package dev.quietledger.server;
 
 import dev.quietledger.core.AnomalyCatalog;
+import dev.quietledger.core.Journal;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
@@ -19,6 +20,7 @@ public final class LedgerData extends SavedData {
     private boolean suppressed;
     private final Map<AnomalyCatalog.Kind, Long> lastEvents = new EnumMap<>(AnomalyCatalog.Kind.class);
     private final Map<UUID, Long> lastPlayers = new HashMap<>();
+    private final Map<UUID, Integer> journals = new HashMap<>();
 
     public static LedgerData get(MinecraftServer server) {
         return server.overworld().getDataStorage().computeIfAbsent(
@@ -40,6 +42,12 @@ public final class LedgerData extends SavedData {
             try { d.lastPlayers.put(UUID.fromString(key), Math.max(0, Math.min(d.activeTicks, players.getLong(key)))); }
             catch (IllegalArgumentException ignored) { /* Ignore malformed save entries. */ }
         }
+        CompoundTag savedJournals = tag.getCompound("journals");
+        for (String key : savedJournals.getAllKeys()) {
+            if (d.journals.size() >= MAX_PLAYERS) break;
+            try { d.journals.put(UUID.fromString(key), savedJournals.getInt(key)); }
+            catch (IllegalArgumentException ignored) { /* Ignore malformed UUIDs. */ }
+        }
         return d;
     }
     @Override public CompoundTag save(CompoundTag tag, HolderLookup.Provider lookup) {
@@ -53,6 +61,9 @@ public final class LedgerData extends SavedData {
         CompoundTag players = new CompoundTag();
         lastPlayers.forEach((k, v) -> players.putLong(k.toString(), v));
         tag.put("lastPlayers", players);
+        CompoundTag savedJournals = new CompoundTag();
+        journals.forEach((k, v) -> savedJournals.putInt(k.toString(), v));
+        tag.put("journals", savedJournals);
         return tag;
     }
     public void advance(long ticks) { activeTicks = Math.min(Long.MAX_VALUE - ticks, activeTicks) + ticks; setDirty(); }
@@ -73,6 +84,17 @@ public final class LedgerData extends SavedData {
         return last == null || dev.quietledger.core.Progression.due(activeTicks, last, cooldown);
     }
     public Map<AnomalyCatalog.Kind, Long> lastEvents() { return Map.copyOf(lastEvents); }
+    /** New journals stop being added at capacity; existing player discoveries remain intact. */
+    public boolean discover(UUID player, Journal.Clue clue) {
+        if (clue == null || (!journals.containsKey(player) && journals.size() >= MAX_PLAYERS)) return false;
+        int current = journals.getOrDefault(player, 0);
+        int updated = Journal.discover(current, clue);
+        if (updated == current) return false;
+        journals.put(player, updated);
+        setDirty();
+        return true;
+    }
+    public int journal(UUID player) { return journals.getOrDefault(player, 0); }
     public void setSuppressed(boolean value) { suppressed = value; setDirty(); }
     public long activeTicks() { return activeTicks; }
     public long lastOpportunity() { return lastOpportunity; }

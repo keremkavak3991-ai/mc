@@ -208,3 +208,9 @@ tasks.register('landingOffsetsTest', JavaExec) {
     mainClass = 'dev.quietledger.core.LandingOffsetsTest'
 }
 tasks.named('check') { dependsOn tasks.named('landingOffsetsTest') }
+tasks.register('journalTest', JavaExec) {
+    dependsOn tasks.named('testClasses')
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'dev.quietledger.core.JournalTest'
+}
+tasks.named('check') { dependsOn tasks.named('journalTest') }

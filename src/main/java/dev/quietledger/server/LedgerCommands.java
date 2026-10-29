@@ -43,6 +43,7 @@ public final class LedgerCommands {
                 c.getSource().sendSuccess(() -> Component.literal(played ? "Test anomaly sent." : "No enabled effect is eligible at this stage."), false);
                 return played ? 1 : 0;
             })));
+        event.getDispatcher().register(Commands.literal("ledgerjournal").executes(c -> JournalService.show(c.getSource().getPlayerOrException())));
         // Recovery must not depend on operator permissions or the travel configuration.
         event.getDispatcher().register(Commands.literal("ledgerescape").executes(c -> DimensionTravel.escape(c.getSource())));
     }
