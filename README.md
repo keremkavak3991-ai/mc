@@ -52,4 +52,4 @@ Code is MIT licensed; the separately retained MDK template license applies to te
 
 ## GitHub Actions build
 
-The `Build mod` workflow installs Java 21 and attempts the Gradle build on GitHub-hosted runners. If successful, download `quiet-ledger-mod` from the workflow run artifacts under the Actions tab. The workflow cannot fix unavailable repositories or compilation errors by itself; inspect its result before treating any artifact as usable. The initial workflow attempt failed and the cause is being investigated.
+The `Build mod` workflow installs Java 21 and attempts the Gradle build on GitHub-hosted runners. If successful, download `quiet-ledger-mod` from the workflow run artifacts under the Actions tab. The workflow cannot fix unavailable repositories or compilation errors by itself; inspect its result before treating any artifact as usable. The first complete workflow run compiled the mod and passed the four executable Java test programs, but Gradle 9 failed the standard test task because no framework-based tests were discovered. The build now explicitly permits that configuration; see the latest run for its result.

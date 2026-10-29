@@ -214,3 +214,5 @@ tasks.register('journalTest', JavaExec) {
     mainClass = 'dev.quietledger.core.JournalTest'
 }
 tasks.named('check') { dependsOn tasks.named('journalTest') }
+// The project currently uses the explicit JavaExec test programs above, not JUnit.
+tasks.named('test', Test) { failOnNoDiscoveredTests = false }
