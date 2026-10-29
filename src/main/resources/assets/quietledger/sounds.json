@@ -1,0 +1,7 @@
+{
+  "distant_creak": {"subtitle": "subtitles.quietledger.distant_creak", "sounds": ["quietledger:distant_creak"]},
+  "hollow_drone": {"subtitle": "subtitles.quietledger.hollow_drone", "sounds": ["quietledger:hollow_drone"]},
+  "deep_knocks": {"subtitle": "subtitles.quietledger.deep_knocks", "sounds": ["quietledger:deep_knocks"]},
+  "near_breath": {"subtitle": "subtitles.quietledger.near_breath", "sounds": ["quietledger:near_breath"]},
+  "unseen_steps": {"subtitle": "subtitles.quietledger.unseen_steps", "sounds": ["quietledger:unseen_steps"]}
+}
